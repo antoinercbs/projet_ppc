@@ -17,11 +17,12 @@ class ClientData:
 
 
 class ClientPlayer:
-    def __init__(self, host, port):
+    def __init__(self, nickname, host, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.socket.connect((host, port))
             print('connection on {}'.format(port))
+            self.socket.send(pickle.dumps(nickname))
         except:
             print("Connection error")
             sys.exit()
@@ -68,7 +69,6 @@ class ClientPlayer:
         if not self.is_running:
             self.socket.close()
             sys.exit(1)
-        #self.gui.window.destroy()
         self.tk_root.after(50, self.periodical_gui_refresh)
 
     def kill_application(self):
