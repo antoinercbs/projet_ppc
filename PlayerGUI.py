@@ -14,13 +14,13 @@ class PlayerGUI:
         self.window = tk_root
         self.window.title('Freak out ! - PPC Project - Falk & Rochebois - 3TC 2020')
 
-        self.cv = Canvas(self.window, width=720, height=640, bg='green')
+        self.cv = Canvas(self.window, width=1020, height=640, bg='green')
 
-        self.draw_game(client_data)
 
         self.cv.pack()
 
     def draw_game(self, client_data):
+        self.cv.delete("all")
         with PlayerGUI.gui_update_lock:
             self.draw_card(250, 240, client_data.current_card)
             self.draw_deck(390, 240, client_data.deck_size)

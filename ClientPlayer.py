@@ -68,6 +68,7 @@ class ClientPlayer:
         if not self.is_running:
             self.socket.close()
             sys.exit(1)
+        #self.gui.window.destroy()
         self.tk_root.after(50, self.periodical_gui_refresh)
 
     def kill_application(self):

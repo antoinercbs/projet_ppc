@@ -37,12 +37,12 @@ class Board:
         Si le coup est permis, la carte est enlevée de la main de ce joueur et devient la carte courante.
         Sinon, le joueur prend une carte du deck dans sa main.
         """
-        player = self.players[player_id]
         if self.is_card_playable(played_card):
-            player.hand.remove(played_card)
+            self.players[player_id].hand.remove(played_card)
             self.current_card = played_card
+            print(self.players[player_id].hand)
         else:
-            player.hand.append(self.deck.pop())
+            self.players[player_id].hand.append(self.deck.pop())
 
     def is_card_playable(self, played_card):
         """

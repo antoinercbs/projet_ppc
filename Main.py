@@ -1,4 +1,4 @@
 from ClientPlayer import ClientPlayer
 
 if __name__ == "__main__":
-    player = ClientPlayer('localhost', 8888)
+    player = ClientPlayer('134.214.203.225', 80)
