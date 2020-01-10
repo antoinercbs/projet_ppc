@@ -4,7 +4,7 @@ from multiprocessing import Process
 from tkinter import messagebox, simpledialog
 
 if __name__ == "__main__":
-    NUM_PORT = 80
+    NUM_PORT = 8080
     Ip = '127.0.0.1'
     nb_player = 0
     is_server = messagebox.askyesno("Freak out !", "Voulez-vous être le serveur de jeu ?")
@@ -25,4 +25,3 @@ if __name__ == "__main__":
         client_process = Process(target=ClientPlayer, args=(nickname, ip, NUM_PORT))
         client_process.start()
         client_process.join()
-
