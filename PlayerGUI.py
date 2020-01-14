@@ -15,8 +15,6 @@ class PlayerGUI:
         self.window.title('Freak out ! - PPC Project - Falk & Rochebois - 3TC 2020')
 
         self.cv = Canvas(self.window, width=1300, height=640, bg='green')
-
-
         self.cv.pack()
 
     def draw_game(self, client_data):

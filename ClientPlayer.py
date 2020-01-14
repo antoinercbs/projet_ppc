@@ -41,22 +41,31 @@ class ClientPlayer:
 
         self.tk_root.mainloop()
 
-    def socket_interface(self):
-        while self.is_running:
+    def socket_interface(self): #Fonction executée sur un thread par le constructeur
+        while self.is_running: #Tant que le programme est en cours d'execution
             try:
-                msg = pickle.loads(self.socket.recv(5000))
-                self.data_queue.put(msg)
+                msg = pickle.loads(self.socket.recv(5000)) #On essaye de lire le message
+                self.data_queue.put(msg) #Si on en reçoit un, on le transmet à l'interface par la queue
             except:
                 pass
-            while self.card_play_queue.qsize():
-                try:
+            while self.card_play_queue.qsize(): #Tant qu'on a des messages dans la queue venant dans l'interface
+                try: #On envoie ces messages (cartes à jouer) sur au serveur par le socket
                     played_card = self.card_play_queue.get(0)
                     self.socket.send(pickle.dumps(played_card))
                 except queue.Empty:
                     pass
 
+    #NB : Ces deux méthodes sont brouillons et leur séparation gagnerait à être clarifiée
+    def periodical_gui_refresh(self):
+        """Met à jour périodiquement (50ms) le jeu avec les données arrivant ou ferme le jeu"""
+        self.data_incoming()
+        if not self.is_running:
+            self.socket.close()
+            sys.exit(1)
+        self.tk_root.after(50, self.periodical_gui_refresh)
+
     def data_incoming(self):
-        """Handle all messages currently in the queue, if any."""
+        """Fonction mettant à jour l'interface si des données sont présente dans la queue correspondante."""
         while self.data_queue.qsize():
             try:
                 msg = self.data_queue.get(0)
@@ -64,12 +73,6 @@ class ClientPlayer:
             except queue.Empty:
                 pass
 
-    def periodical_gui_refresh(self):
-        self.data_incoming()
-        if not self.is_running:
-            self.socket.close()
-            sys.exit(1)
-        self.tk_root.after(50, self.periodical_gui_refresh)
 
     def kill_application(self):
         self.is_running = False

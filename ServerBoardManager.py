@@ -4,7 +4,7 @@ from ClientPlayer import ClientData
 
 
 class ServerPlayer:
-
+    """Classe gérant les données de chaque joueur pour le serveur"""
     def __init__(self, nickname, hand):
         self.nickname = nickname
         self.hand = hand
@@ -13,20 +13,21 @@ class ServerPlayer:
     def update_last_move_time(self):
         self.lastMoveTime = time.time()
 
-    def is_last_move_time_greater_than(self, delay):
+    def is_last_move_delay_greater_than(self, delay):
         return time.time() - self.lastMoveTime >= delay
 
 
-class Board:
-
+class BoardManager:
+    """Classe gérant le déroulé du jeu"""
     def __init__(self, *player_names):
-        self.deck = Board.generate_shuffled_deck()
+        self.deck = BoardManager.generate_shuffled_deck()
         self.current_card = self.deck.pop()
         self.players = [ServerPlayer(player_names[j], [self.deck.pop() for i in range(5)]) for j in
                         range(len(player_names))]
 
     @staticmethod
     def generate_shuffled_deck():
+        """Génère la pile de jeu mélangée"""
         deck = [('red', i // 2) if i % 2 == 0 else ('blue', i // 2) for i in range(2, 22)]
         random.shuffle(deck)
         return deck
@@ -40,9 +41,9 @@ class Board:
         if self.is_card_playable(played_card):
             self.players[player_id].hand.remove(played_card)
             self.current_card = played_card
-            print(self.players[player_id].hand)
         else:
             self.players[player_id].hand.append(self.deck.pop())
+        self.players[player_id].update_last_move_time()
 
     def is_card_playable(self, played_card):
         """
@@ -57,18 +58,21 @@ class Board:
             return value == self.current_card[1]  # Vrai si valeur = celle courante
 
     def is_game_over(self):
+        """Détermine si la partie est finie"""
         for hand in self.players.hand:
             if len(hand) == 0:
                 return True
         return len(self.deck) == 0
 
     def get_winner(self):
+        """Détermine le gagnant d'une partie finie"""
         for p in self.players:
             if len(p.hand) == 0:
                 return p
         return None
 
     def get_client_data_for(self, player_id):
+        """Extrait de ce jeu les données nécessaires au format de l'objet ClientData utilisé par les clients"""
         cdata = ClientData()
         cdata.player_hand = self.players[player_id].hand
         cdata.current_card = self.current_card
@@ -84,7 +88,7 @@ class Board:
 
 
 if __name__ == "__main__":
-    board = Board('Jean', 'Robert', 'Fabrice')
+    board = BoardManager('Jean', 'Robert', 'Fabrice')
     print(board.deck)
     print(board.current_card)
     print(board.players[1].hand)
