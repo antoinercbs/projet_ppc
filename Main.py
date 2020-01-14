@@ -25,4 +25,3 @@ if __name__ == "__main__":
         client_process = Process(target=ClientPlayer, args=(nickname, ip, NUM_PORT))
         client_process.start()
         client_process.join()
-
