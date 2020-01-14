@@ -89,29 +89,29 @@ class BoardManager:
                 else :
                     return False
             else :
-                return get_value_playable(x,y).contains(value)
+                return self.get_value_playable(x,y).contains(value)
         return False
 
     def get_value_playable(self,x,y):
         impossible_values=[]
         possible_values=[1,2,3,4,5,6,7,8,9]
         try :
-            if grid[x-1][y][1]:
+            if self.grid[x-1][y][1]:
                 impossible_values+=[x for x in possible_values if x!=grid[x-1][y][2][1]-1 and x!=grid[x-1][y][2][1]+1]
         except IndexError:
             pass
         try :
-            if grid[x+1][y][1]:
+            if self.grid[x+1][y][1]:
                 impossible_values+=[x for x in possible_values if x!=grid[x+1][y][2][1]-1 and x!=grid[x+1][y][2][1]+1]
         except IndexError:
             pass
         try :
-            if grid[x][y-1][1]:
+            if self.grid[x][y-1][1]:
                 impossible_values+=[x for x in possible_values if x!=grid[x][y-1][2][1]-1 and x!=grid[x][y-1][2][1]+1]
         except IndexError:
             pass
         try :
-            if grid[x][y+1][1]:
+            if self.grid[x][y+1][1]:
                 impossible_values+=[x for x in possible_values if x!=grid[x][y+1][2][1]-1 and x!=grid[x][y+1][2][1]+1]
         except IndexError:
             pass
