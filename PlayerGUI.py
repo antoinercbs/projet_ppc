@@ -4,6 +4,8 @@ import sys
 from threading import Thread, RLock
 import queue
 
+from ClientPlayer import ClientData
+
 
 class PlayerGUI:
 
@@ -14,19 +16,20 @@ class PlayerGUI:
         self.window = tk_root
         self.window.title('Freak out ! - PPC Project - Falk & Rochebois - 3TC 2020')
 
-        self.cv = Canvas(self.window, width=1300, height=640, bg='green')
+        self.cv = Canvas(self.window, width=1100, height=900, bg='green')
         self.cv.pack()
 
     def draw_game(self, client_data):
         self.cv.delete("all")
         with PlayerGUI.gui_update_lock:
-            self.draw_card(250, 240, client_data.current_card)
-            self.draw_deck(390, 240, client_data.deck_size)
-            self.draw_player_hand(140, 500, client_data.player_hand)
+            #self.draw_card(250, 240, client_data.current_card)
+            self.draw_grid(200,50, client_data.current_grid)
+            #self.draw_deck(390, 240, client_data.deck_size)
+            self.draw_player_hand(330, 790, client_data.player_hand)
             if len(client_data.other_players) >=1:
-                self.draw_other_player_hand(20, 170, client_data.other_players[0])
+                self.draw_other_player_hand(30, 170, client_data.other_players[0])
             if len(client_data.other_players) >=2:
-                self.draw_other_player_hand(580, 170, client_data.other_players[1])
+                self.draw_other_player_hand(950, 170, client_data.other_players[1])
 
     def draw_other_player_hand(self, x, y, player_infos):
         name = player_infos[0]
@@ -41,17 +44,38 @@ class PlayerGUI:
 
     def draw_player_hand(self, x, y, player_hand):
         for i in range(len(player_hand)):
-            self.draw_card(x + i * 90, y, player_hand[i], clickable=True)
+            self.draw_card(x + i * 90, y, player_hand[i], nature='player_hand')
 
     def on_click(self, *args):
         card = args[0]
+        print(args)
         self.card_play_queue.put(card)
 
-    def draw_card(self, x, y, card, clickable=False):
+
+    def draw_grid(self, x, y, card_grid):
+        for i in range(len(card_grid)):
+            for j in range(len(card_grid[0])):
+                cur_x =x+100*i
+                cur_y =y+100*j
+                case = self.cv.create_rectangle(cur_x, cur_y, cur_x + 100, cur_y + 100, outline = 'white', width = 3, fill = 'green')
+                self.cv.tag_bind(case, "<Button-1>", partial(self.on_click, 'grid_card', (i,j)))
+                if card_grid[i][j] is not None:
+                    self.draw_card(cur_x+10, cur_y+10, card_grid[i][j], nature='grid_card')
+
+    def draw_card(self, x, y, card, nature=None):
         card_color = card[0]
         card_value = card[1]
-        rect = self.cv.create_rectangle(x, y, x + 80, y + 120, outline='white', fill=card_color, width=5)
-        text = self.cv.create_text(x + 40, y + 60, text=str(card_value), fill='white', font=('Arial', 50))
-        if clickable:
-            self.cv.tag_bind(rect, "<Button-1>", partial(self.on_click, card))
-            self.cv.tag_bind(text, "<Button-1>", partial(self.on_click, card))
+        rect = self.cv.create_rectangle(x, y, x + 80, y + 80, outline='white', fill=card_color, width=5)
+        text = self.cv.create_text(x + 40, y + 40, text=str(card_value), fill='white', font=('Arial', 50))
+        if nature is not None:
+            self.cv.tag_bind(rect, "<Button-1>", partial(self.on_click, nature, card))
+            self.cv.tag_bind(text, "<Button-1>", partial(self.on_click, nature, card))
+
+
+if __name__ == "__main__":
+    card_play_queue = queue.Queue()
+    client_data = ClientData()
+    tk_root = Tk()
+    gui = PlayerGUI(client_data, card_play_queue, tk_root)
+    gui.draw_game(client_data)
+    tk_root.mainloop()

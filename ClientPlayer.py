@@ -2,7 +2,7 @@ from threading import Thread
 import time
 import queue
 import random
-from PlayerGUI import PlayerGUI
+#from PlayerGUI import PlayerGUI
 from tkinter import *
 import socket
 import pickle
@@ -10,8 +10,11 @@ import pickle
 
 class ClientData:
     def __init__(self):
+        grid_size = 7
         self.player_hand = [('blue', 9), ('red', 1), ('red', 10), ('red', 2), ('red', 3)]
-        self.current_card = ('blue', 5)
+        self.current_grid = [[None for i in range(grid_size)]for j in range(grid_size)]
+        self.current_grid[3][3] = ('blue', 9)
+        self.current_grid[2][1] = ('red', 5)
         self.other_players = [('Toto', 5), ('Tata',3)]
         self.deck_size = 4
 
