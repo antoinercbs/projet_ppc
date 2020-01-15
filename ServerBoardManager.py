@@ -17,7 +17,7 @@ class ServerPlayer:
         return time.time() - self.lastMoveTime >= delay
 
 
-class Board:
+class BoardManager:
 
     def __init__(self, *player_names):
         self.available_colors=['red','blue']
@@ -25,8 +25,8 @@ class Board:
         self.available_cards=[]
         for color in self.available_colors :
             for value in self.available_values :
-                self.available_cards+=[[color,value]]
-        self.deck = Board.generate_shuffled_deck(self.available_colors,self.available_values)
+                self.available_cards+=[(color,value)]
+        self.deck = BoardManager.generate_shuffled_deck(self.available_colors, self.available_values)
         self.size_grid = 7
         self.grid = [[None]*self.size_grid for i in range(self.size_grid)]
         self.grid[self.size_grid//2][self.size_grid//2] = self.deck.pop()
@@ -38,16 +38,17 @@ class Board:
         deck=[]
         for color in colors :
             for value in values :
-                deck+=[[color,value]]
+                deck+=[(color,value)]
         random.shuffle(deck)
         return deck
 
-    def update_player_hand_from_move_on(self, x, y, player_id, played_card):
+    def update_player_hand_from_move_on(self, player_id, played_card, played_pos):
         """
         Tente le dépot d'une carte sur une case par un joueur.
         Si le coup est permis, la carte est enlevée de la main de ce joueur et est posée sur la grille.
         Sinon, le joueur prend une carte du deck dans sa main.
         """
+        x, y = played_pos
         if self.is_card_playable_on(x,y,played_card):   #Teste si la carte peut être posée
             self.players[player_id].hand.remove(played_card)    #Si oui, on enlève la carte de la main
             self.grid[x][y]=played_card  #Et on la pose sur le plateau
@@ -151,8 +152,7 @@ class Board:
     def get_client_data_for(self, player_id):
         cdata = ClientData()
         cdata.player_hand = self.players[player_id].hand
-        cdata.size_grid=self.size_grid
-        cdata.grid=self.grid
+        cdata.current_grid = self.grid
         cdata.deck_size = len(self.deck)
         cdata.other_players.clear()
         for i in range(len(self.players)):
@@ -162,7 +162,7 @@ class Board:
 
 
 if __name__ == "__main__":
-    board = Board('Jean')
+    board = BoardManager('Jean')
 
     print(board.deck)
     for i in range(board.size_grid):
@@ -170,21 +170,20 @@ if __name__ == "__main__":
             print(str(i)+"-"+str(j)+" "+str(board.grid[i][j]))
     print(board.players[0].hand)
 
-    """#pour tester, mettre en commentaire random.shuffle(deck)
-    board.update_player_hand_from_move_on(3, 3, 0, ['blue',6])
-    board.update_player_hand_from_move_on(3, 3, 0, ['blue',6])
-    board.update_player_hand_from_move_on(3, 3, 0, ['blue',6])
-    board.update_player_hand_from_move_on(3, 3, 0, ['blue',6])
-    board.update_player_hand_from_move_on(3, 3, 0, ['blue',6])
-    board.update_player_hand_from_move_on(4, 1, 0, ['blue',6])
-    board.update_player_hand_from_move_on(3, 3, 0, ['blue',6])
-    board.update_player_hand_from_move_on(3, 2, 0, ['blue',8])
-    board.update_player_hand_from_move_on(3, 1, 0, ['blue',7])
-    board.update_player_hand_from_move_on(4, 1, 0, ['blue',6])
-    board.update_player_hand_from_move_on(4, 1, 0, ['red',6])
-    board.update_player_hand_from_move_on(4, 2, 0, ['red',7])
-    board.update_player_hand_from_move_on(4, 0, 0, ['red',7])
-
+""" #pour tester, mettre en commentaire random.shuffle(deck)
+    board.update_player_hand_from_move_on(3, 3, 0, ('blue',6))
+    board.update_player_hand_from_move_on(3, 3, 0, ('blue',6))
+    board.update_player_hand_from_move_on(3, 3, 0, ('blue',6))
+    board.update_player_hand_from_move_on(3, 3, 0, ('blue',6))
+    board.update_player_hand_from_move_on(3, 3, 0, ('blue',6))
+    board.update_player_hand_from_move_on(4, 1, 0, ('blue',6))
+    board.update_player_hand_from_move_on(3, 3, 0, ('blue',6))
+    board.update_player_hand_from_move_on(3, 2, 0, ('blue',8))
+    board.update_player_hand_from_move_on(3, 1, 0, ('blue',7))
+    board.update_player_hand_from_move_on(4, 1, 0, ('blue',6))
+    board.update_player_hand_from_move_on(4, 1, 0, ('red',6))
+    board.update_player_hand_from_move_on(4, 2, 0, ('red',7))
+    board.update_player_hand_from_move_on(4, 0, 0, ('red',7))
     for i in range(board.size_grid):
         for j in range(board.size_grid):
             print(str(i)+"-"+str(j)+" "+str(board.grid[i][j]))

@@ -19,14 +19,25 @@ class PlayerGUI:
         self.window.title('Freak out ! - PPC Project - Falk & Rochebois - 3TC 2020')
 
         self.cv = Canvas(self.window, width=1100, height=900, bg='green')
+        self.draw_game(client_data)
         self.cv.pack()
+
+    def on_click(self, *args):
+        nature = args[0]
+        if nature == 'player_hand':
+            card = args[1]
+            self.selected_card = card;
+        if nature == 'grid_card' and self.selected_card is not None:
+            pos = args[1]
+            #print("On place la carte {} à l'emplacement {}".format(self.selected_card, pos))
+            self.card_play_queue.put((self.selected_card, pos))
+            self.selected_card = None
 
     def draw_game(self, client_data):
         self.cv.delete("all")
         with PlayerGUI.gui_update_lock:
-            #self.draw_card(250, 240, client_data.current_card)
             self.draw_grid(200,50, client_data.current_grid)
-            #self.draw_deck(390, 240, client_data.deck_size)
+            self.draw_deck(60, 630, client_data.deck_size)
             self.draw_player_hand(330, 790, client_data.player_hand)
             if len(client_data.other_players) >=1:
                 self.draw_other_player_hand(30, 170, client_data.other_players[0])
@@ -47,19 +58,6 @@ class PlayerGUI:
     def draw_player_hand(self, x, y, player_hand):
         for i in range(len(player_hand)):
             self.draw_card(x + i * 90, y, player_hand[i], nature='player_hand')
-
-    def on_click(self, *args):
-        nature = args[0]
-        if nature == 'player_hand':
-            card = args[1]
-            self.selected_card = card;
-        if nature == 'grid_card' and self.selected_card is not None:
-            pos = args[1]
-            print("On place la carte {} à l'emplacement {}".format(self.selected_card, pos))
-            #self.card_play_queue.put(card, pos)
-            self.selected_card=None
-
-
 
     def draw_grid(self, x, y, card_grid):
         for i in range(len(card_grid)):

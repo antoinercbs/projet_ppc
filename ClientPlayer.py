@@ -2,7 +2,7 @@ from threading import Thread
 import time
 import queue
 import random
-#from PlayerGUI import PlayerGUI
+
 from tkinter import *
 import socket
 import pickle
@@ -18,6 +18,7 @@ class ClientData:
         self.other_players = [('Toto', 5), ('Tata',3)]
         self.deck_size = 4
 
+from PlayerGUI import PlayerGUI
 
 class ClientPlayer:
     def __init__(self, nickname, host, port):
@@ -53,8 +54,8 @@ class ClientPlayer:
                 pass
             while self.card_play_queue.qsize(): #Tant qu'on a des messages dans la queue venant dans l'interface
                 try: #On envoie ces messages (cartes à jouer) sur au serveur par le socket
-                    played_card = self.card_play_queue.get(0)
-                    self.socket.send(pickle.dumps(played_card))
+                    played_move = self.card_play_queue.get()
+                    self.socket.send(pickle.dumps(played_move))
                 except queue.Empty:
                     pass
 
@@ -71,7 +72,7 @@ class ClientPlayer:
         """Fonction mettant à jour l'interface si des données sont présente dans la queue correspondante."""
         while self.data_queue.qsize():
             try:
-                msg = self.data_queue.get(0)
+                msg = self.data_queue.get()
                 self.gui.draw_game(msg)
             except queue.Empty:
                 pass

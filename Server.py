@@ -51,11 +51,12 @@ class Server:
                 pass
 
         while self.is_game_running: #Une fois que tous les pseudos sont donnés, on lance le jeu
-            client_input = "" #On envoie périodiquement l'état du plateau au joueur
+            played_card = "" #On envoie périodiquement l'état du plateau au joueur
             connection.send(pickle.dumps(self.board_manager.get_client_data_for(client_id)))
             try:
-                client_input = pickle.loads(connection.recv(5000)) #On écoute pendant 50ms pour une entrée de ce client
-                self.board_manager.update_player_hand_from_move(client_id, client_input)
+                (played_card, played_pos) = pickle.loads(connection.recv(5000)) #On écoute pendant 50ms pour une entrée de ce client
+                print("{} place la carte {} à l'emplacement {}".format(client_id, played_card, played_pos))
+                self.board_manager.update_player_hand_from_move_on(client_id, played_card, played_pos)
             except: #Si on a pas d'entrée joueur durant l'att
                 pass
 
