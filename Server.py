@@ -55,7 +55,6 @@ class Server:
             connection.send(pickle.dumps(self.board_manager.get_client_data_for(client_id)))
             try:
                 (played_card, played_pos) = pickle.loads(connection.recv(5000)) #On écoute pendant 50ms pour une entrée de ce client
-                print("{} place la carte {} à l'emplacement {}".format(client_id, played_card, played_pos))
                 self.board_manager.update_player_hand_from_move_on(client_id, played_card, played_pos)
             except: #Si on a pas d'entrée joueur durant l'att
                 pass

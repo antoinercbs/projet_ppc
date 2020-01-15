@@ -5,15 +5,15 @@ from tkinter import messagebox, simpledialog
 
 if __name__ == "__main__":
     NUM_PORT = 8001
-    ip = '127.0.0.1'
-    nb_player = 1
+    ip = '192.168.1.39'
+    nb_player = 2
 
-    server_process = Process(target=Server, args=(nb_player, ip, NUM_PORT))
-    client_process = Process(target=ClientPlayer, args=("nickname", ip, NUM_PORT))
-    server_process.start()
+    #server_process = Process(target=Server, args=(nb_player, ip, NUM_PORT))
+    client_process = Process(target=ClientPlayer, args=("Sylvain", ip, NUM_PORT))
+    #server_process.start()
     client_process.start()
     client_process.join()
-    server_process.join()
+    #server_process.join()
 
     """is_server = messagebox.askyesno("Freak out !", "Voulez-vous être le serveur de jeu ?")
     if is_server:

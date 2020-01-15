@@ -27,9 +27,12 @@ class PlayerGUI:
         if nature == 'player_hand':
             card = args[1]
             self.selected_card = card;
-        if nature == 'grid_card' and self.selected_card is not None:
+        elif nature == 'grid_card' and self.selected_card is not None:
+            pos = args[2]
+            self.card_play_queue.put((self.selected_card, pos))
+            self.selected_card = None
+        elif nature == 'grid':
             pos = args[1]
-            #print("On place la carte {} à l'emplacement {}".format(self.selected_card, pos))
             self.card_play_queue.put((self.selected_card, pos))
             self.selected_card = None
 
@@ -65,18 +68,18 @@ class PlayerGUI:
                 cur_x =x+100*i
                 cur_y =y+100*j
                 case = self.cv.create_rectangle(cur_x, cur_y, cur_x + 100, cur_y + 100, outline = 'white', width = 3, fill = 'green')
-                self.cv.tag_bind(case, "<Button-1>", partial(self.on_click, 'grid_card', (i,j)))
+                self.cv.tag_bind(case, "<Button-1>", partial(self.on_click, 'grid', (i,j)))
                 if card_grid[i][j] is not None:
-                    self.draw_card(cur_x+10, cur_y+10, card_grid[i][j], nature='grid_card')
+                    self.draw_card(cur_x+10, cur_y+10, card_grid[i][j], nature='grid_card', grid_x=i, grid_y=j)
 
-    def draw_card(self, x, y, card, nature=None):
+    def draw_card(self, x, y, card, nature=None, grid_x=None, grid_y=None):
         card_color = card[0]
         card_value = card[1]
         rect = self.cv.create_rectangle(x, y, x + 80, y + 80, outline='white', fill=card_color, width=5)
         text = self.cv.create_text(x + 40, y + 40, text=str(card_value), fill='white', font=('Arial', 50))
         if nature is not None:
-            self.cv.tag_bind(rect, "<Button-1>", partial(self.on_click, nature, card))
-            self.cv.tag_bind(text, "<Button-1>", partial(self.on_click, nature, card))
+            self.cv.tag_bind(rect, "<Button-1>", partial(self.on_click, nature, card, (grid_x, grid_y)))
+            self.cv.tag_bind(text, "<Button-1>", partial(self.on_click, nature, card, (grid_x, grid_y)))
 
 
 if __name__ == "__main__":
