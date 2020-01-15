@@ -13,6 +13,8 @@ class PlayerGUI:
 
     def __init__(self, client_data, card_play_queue, tk_root):
         self.card_play_queue = card_play_queue
+        self.selected_card = None
+
         self.window = tk_root
         self.window.title('Freak out ! - PPC Project - Falk & Rochebois - 3TC 2020')
 
@@ -47,9 +49,16 @@ class PlayerGUI:
             self.draw_card(x + i * 90, y, player_hand[i], nature='player_hand')
 
     def on_click(self, *args):
-        card = args[0]
-        print(args)
-        self.card_play_queue.put(card)
+        nature = args[0]
+        if nature == 'player_hand':
+            card = args[1]
+            self.selected_card = card;
+        if nature == 'grid_card' and self.selected_card is not None:
+            pos = args[1]
+            print("On place la carte {} à l'emplacement {}".format(self.selected_card, pos))
+            #self.card_play_queue.put(card, pos)
+            self.selected_card=None
+
 
 
     def draw_grid(self, x, y, card_grid):
