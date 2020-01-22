@@ -89,17 +89,18 @@ class Server:
 
     def manage_endgame(self, winner):
         if winner is not None:
-            if winner == -1:
-                print("Aucun gagnant.")
-                self.clients[0].send(pickle.dumps("Le jeu"))
-            else:
-                print("Le gagnant est {}".format(winner.nickname))
-                self.clients[0].send(pickle.dumps(winner.nickname))
-            print("Demande de nouvelle partie au joueur principal.")
+            winner_name = "Le jeu" if winner == -1 else winner.nickname
+            print("Le gagnant est {}".format(winner_name))
+            for client in self.clients:
+                print(client)
+                client.send(pickle.dumps(winner_name))
+            print("Demande de nouvelle partie aux joueurs.")
             replay = None
             while not isinstance(replay, bool):
                 try:
-                    replay = pickle.loads(self.clients[0].recv(5000))
+                    for client in self.clients:
+                        replay = pickle.loads(client.recv(5000))
+                        break
                 except ConnectionAbortedError:  # Si un joueur se déconnecte
                     self.manage_disconnection()
                 except:

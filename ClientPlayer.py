@@ -49,7 +49,7 @@ class ClientPlayer:
     def socket_interface(self):  # Fonction executée sur un thread par le constructeur
         while self.is_running:  # Tant que le programme est en cours d'execution
             try:
-                msg = pickle.loads(self.socket.recv(5000))  # On essaye de lire le message
+                msg = pickle.loads(self.socket.recv(5000))  # On essaye de lire le message*
                 if isinstance(msg, str):
                     root = Tk()
                     root.withdraw()

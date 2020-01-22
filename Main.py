@@ -6,7 +6,7 @@ import tkinter
 
 if __name__ == "__main__":
     NUM_PORT = 8001
-    ip = '127.0.0.1'
+    ip = '192.168.43.202'
     nb_player = 0
 
     root = tkinter.Tk()

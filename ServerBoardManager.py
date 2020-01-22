@@ -21,7 +21,7 @@ class BoardManager:
 
     def __init__(self, *player_names):
         self.available_colors = ['red', 'blue']
-        self.available_values = [i for i in range(1, 11)]
+        self.available_values = [i for i in range(1, 10)]
         self.available_cards = []
         for color in self.available_colors:
             for value in self.available_values:
@@ -46,7 +46,7 @@ class BoardManager:
         if self.is_game_over():
             return self.get_winner()
         for player in self.players:
-            if player.is_last_move_time_greater_than(7):
+            if player.is_last_move_time_greater_than(10):
                 player.hand.append(self.deck.pop())
                 player.update_last_move_time()
 
