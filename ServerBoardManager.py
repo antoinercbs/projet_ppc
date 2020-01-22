@@ -21,7 +21,7 @@ class BoardManager:
 
     def __init__(self, *player_names):
         self.available_colors = ['red', 'blue']
-        self.available_values = [i for i in range(1, 10)]
+        self.available_values = [i for i in range(1, 11)]
         self.available_cards = []
         for color in self.available_colors:
             for value in self.available_values:
@@ -42,6 +42,14 @@ class BoardManager:
         random.shuffle(deck)
         return deck
 
+    def update_players_hands_from_timeout(self):
+        if self.is_game_over():
+            return self.get_winner()
+        for player in self.players:
+            if player.is_last_move_time_greater_than(7):
+                player.hand.append(self.deck.pop())
+                player.update_last_move_time()
+
     def update_player_hand_from_move_on(self, player_id, played_card, played_pos):
         """
         Tente le dépot d'une carte sur une case par un joueur.
@@ -54,6 +62,9 @@ class BoardManager:
             self.grid[x][y] = played_card  # Et on la pose sur le plateau
         else:
             self.players[player_id].hand.append(self.deck.pop())  # Sinon il pioche
+        self.players[player_id].update_last_move_time()
+        if self.is_game_over():
+            return self.get_winner()
 
     def is_box_filled(self, x, y):
         return self.grid[x][y] is not None
@@ -149,8 +160,8 @@ class BoardManager:
         return [card for card in self.available_cards if not card in impossible_cards]
 
     def is_game_over(self):
-        for hand in self.players.hand:
-            if len(hand) == 0:
+        for player in self.players:
+            if len(player.hand) == 0:
                 return True
         return len(self.deck) == 0
 
@@ -158,7 +169,7 @@ class BoardManager:
         for p in self.players:
             if len(p.hand) == 0:
                 return p
-        return None
+        return -1
 
     def get_client_data_for(self, player_id):
         cdata = ClientData()

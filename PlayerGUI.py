@@ -1,7 +1,6 @@
 from tkinter import *
 from functools import partial
-import sys
-from threading import Thread, RLock
+from threading import RLock
 import queue
 
 from ClientPlayer import ClientData
@@ -39,9 +38,9 @@ class PlayerGUI:
     def draw_game(self, client_data):
         self.cv.delete("all")
         with PlayerGUI.gui_update_lock:
-            self.draw_grid(200,50, client_data.current_grid)
+            self.draw_grid(200, 50, client_data.current_grid)
             self.draw_deck(60, 630, client_data.deck_size)
-            self.draw_player_hand(330, 790, client_data.player_hand)
+            self.draw_player_hand(60, 790, client_data.player_hand)
             if len(client_data.other_players) >=1:
                 self.draw_other_player_hand(30, 170, client_data.other_players[0])
             if len(client_data.other_players) >=2:
