@@ -48,7 +48,7 @@ class PlayerGUI:
 
     def draw_other_player_hand(self, x, y, player_infos):
         name = player_infos[0]
-        self.cv.create_text(x+20, y-50, text=name, font=('Arial', 20))
+        self.cv.create_text(x+50, y-50, text=name, font=('Arial', 20))
         card_count = player_infos[1]
         for i in range(card_count):
             self.cv.create_rectangle(x, y + i * 50, x + 120, y + 80 + i * 50, outline='white', fill='red', width=5)
