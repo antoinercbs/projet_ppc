@@ -7,7 +7,7 @@ import sys
 
 if __name__ == "__main__":
     NUM_PORT = 8003
-    ip = '127.0.0.1'
+    ip = '192.168.43.208'
     nb_player = 0
 
     root = tkinter.Tk() # initialisation d'une interface pour les choix
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         client_process.join() #Attente de la fin des process
         server_process.join()
     else:
-        ip = simpledialog.askstring("Freak out !", "A quelle adresse IP se connecter ?")
+        ip = simpledialog.askstring("Freak out !", "A quelle adresse IP se connecter ?", initialvalue=ip)
         nickname = simpledialog.askstring("Freak out !", "Quel est votre pseudo ?")
         client_process = Process(target=ClientPlayer, args=(nickname, ip, NUM_PORT))
         client_process.start()
