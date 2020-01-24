@@ -67,12 +67,12 @@ class ClientPlayer:
     # NB : Ces deux méthodes sont brouillons et leur séparation gagnerait à être clarifiée
     def periodical_gui_refresh(self):
         """Met à jour périodiquement (50ms) le jeu avec les données arrivant ou ferme le jeu"""
-        self.data_incoming()
+        self.gui_refresh()
         if not self.is_running:
-            sys.exit(1)
+            sys.exit(1)  # Fermer ici est préconnisé par la doc tkinter
         self.tk_root.after(50, self.periodical_gui_refresh)
 
-    def data_incoming(self):
+    def gui_refresh(self):
         """Fonction mettant à jour l'interface si des données sont présente dans la queue correspondante.
         On attend qu'il y ait un message dans la queue des données plateaux et on s'en sert pour mettre à jour l'interface
         """
@@ -88,7 +88,9 @@ class ClientPlayer:
         Arrête le client
         :return:
         """
-        print("Arrêt du client.")
+        print("Fermeture du socket client.")
         self.socket.close()
+        self.socket_thread.join()
         self.is_running = False
+        print('Arrêt du client.')
 
