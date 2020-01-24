@@ -90,7 +90,6 @@ class ClientPlayer:
         """
         print("Fermeture du socket client.")
         self.socket.close()
-        self.socket_thread.join()
         self.is_running = False
         print('Arrêt du client.')
 

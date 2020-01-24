@@ -7,7 +7,6 @@ from ClientPlayer import ClientData
 
 
 class PlayerGUI:
-
     gui_update_lock = RLock()
 
     def __init__(self, client_data, card_play_queue, tk_root):
@@ -22,33 +21,34 @@ class PlayerGUI:
         self.cv.pack()
 
     def on_click(self, *args):
-        nature = args[0]
-        if nature == 'player_hand':
-            card = args[1]
-            self.selected_card = card;
-        elif nature == 'grid_card' and self.selected_card is not None:
-            pos = args[2]
-            self.card_play_queue.put((self.selected_card, pos))
-            self.selected_card = None
-        elif nature == 'grid':
-            pos = args[1]
-            self.card_play_queue.put((self.selected_card, pos))
-            self.selected_card = None
+        with PlayerGUI.gui_update_lock:
+            nature = args[0]
+            if nature == 'player_hand':
+                card = args[1]
+                self.selected_card = card;
+            elif nature == 'grid_card' and self.selected_card is not None:
+                pos = args[2]
+                self.card_play_queue.put((self.selected_card, pos))
+                self.selected_card = None
+            elif nature == 'grid':
+                pos = args[1]
+                self.card_play_queue.put((self.selected_card, pos))
+                self.selected_card = None
 
     def draw_game(self, client_data):
-        self.cv.delete("all")
         with PlayerGUI.gui_update_lock:
+            self.cv.delete("all")
             self.draw_grid(200, 50, client_data.current_grid)
             self.draw_deck(60, 630, client_data.deck_size)
             self.draw_player_hand(60, 790, client_data.player_hand)
-            if len(client_data.other_players) >=1:
+            if len(client_data.other_players) >= 1:
                 self.draw_other_player_hand(30, 170, client_data.other_players[0])
-            if len(client_data.other_players) >=2:
+            if len(client_data.other_players) >= 2:
                 self.draw_other_player_hand(950, 170, client_data.other_players[1])
 
     def draw_other_player_hand(self, x, y, player_infos):
         name = player_infos[0]
-        self.cv.create_text(x+50, y-50, text=name, font=('Arial', 20))
+        self.cv.create_text(x + 50, y - 50, text=name, font=('Arial', 20))
         card_count = player_infos[1]
         for i in range(card_count):
             self.cv.create_rectangle(x, y + i * 50, x + 120, y + 80 + i * 50, outline='white', fill='red', width=5)
@@ -64,12 +64,13 @@ class PlayerGUI:
     def draw_grid(self, x, y, card_grid):
         for i in range(len(card_grid)):
             for j in range(len(card_grid[0])):
-                cur_x =x+100*i
-                cur_y =y+100*j
-                case = self.cv.create_rectangle(cur_x, cur_y, cur_x + 100, cur_y + 100, outline = 'white', width = 3, fill = 'green')
-                self.cv.tag_bind(case, "<Button-1>", partial(self.on_click, 'grid', (i,j)))
+                cur_x = x + 100 * i
+                cur_y = y + 100 * j
+                case = self.cv.create_rectangle(cur_x, cur_y, cur_x + 100, cur_y + 100, outline='white', width=3,
+                                                fill='green')
+                self.cv.tag_bind(case, "<Button-1>", partial(self.on_click, 'grid', (i, j)))
                 if card_grid[i][j] is not None:
-                    self.draw_card(cur_x+10, cur_y+10, card_grid[i][j], nature='grid_card', grid_x=i, grid_y=j)
+                    self.draw_card(cur_x + 10, cur_y + 10, card_grid[i][j], nature='grid_card', grid_x=i, grid_y=j)
 
     def draw_card(self, x, y, card, nature=None, grid_x=None, grid_y=None):
         card_color = card[0]
