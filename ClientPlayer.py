@@ -74,6 +74,8 @@ class ClientPlayer:
                 try:  # On envoie ces messages (cartes à jouer) sur au serveur par le socket
                     played_move = self.card_play_queue.get()
                     self.socket.send(pickle.dumps(played_move))
+                except ConnectionAbortedError:  # Si le serveur se déconnecte, on arrête le client
+                    self.kill_application()
                 except queue.Empty:
                     pass
 
